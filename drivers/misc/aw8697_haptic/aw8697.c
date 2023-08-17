@@ -5646,7 +5646,6 @@ static int aw8697_haptic_rtp_init(struct aw8697 *aw8697)
     bool rtp_start = true;
 	unsigned char glb_state_val = 0x0;
 
-    pr_info("%s enter\n", __func__);
     aw8697_pm_qos_enable(aw8697, true);
 	if(aw8697->ram.base_addr == 0) {
 		aw8697_ram_update(aw8697);
@@ -5695,8 +5694,6 @@ static int aw8697_haptic_rtp_init(struct aw8697 *aw8697)
         aw8697_haptic_set_rtp_aei(aw8697, true);
     }
     aw8697_pm_qos_enable(aw8697, false);
-
-    pr_info("%s exit\n", __func__);
 
     return 0;
 }
@@ -6299,7 +6296,6 @@ static void aw8697_rtp_work_routine(struct work_struct *work)
     int ret = -1;
     struct aw8697 *aw8697 = container_of(work, struct aw8697, rtp_work);
 
-    pr_info("%s enter\n", __func__);
 	if (aw8697->rtp_routine_on) {
 		pr_info("%s rtp_routine_on,ignore vibrate before done\n", __func__);
 		return;
@@ -6310,7 +6306,6 @@ static void aw8697_rtp_work_routine(struct work_struct *work)
     rtp_file = aw8697_rtp_load_file_accord_f0(aw8697);
     if (!rtp_file)
     {
-        pr_info("%s  aw8697->rtp_file_num[%d]\n", __func__, aw8697->rtp_file_num);
         aw8697->rtp_routine_on = 1;
         if (aw8697->device_id == 815) {
             if (aw8697->f0 <= 1670) {
@@ -6487,8 +6482,6 @@ static void aw8697_rtp_work_routine(struct work_struct *work)
 		return;
 	}
 
-	pr_info("%s: rtp file [%s] size = %d\n", __func__,
-		aw8697_rtp_name[aw8697->rtp_file_num], aw8697_rtp->len);
 	if (aw8697->sin_add_flag == 1) {
 		aw8697_update_rtp_data(aw8697, rtp_file);
 		aw8697->sin_add_flag = 0;
@@ -6497,50 +6490,6 @@ static void aw8697_rtp_work_routine(struct work_struct *work)
 #endif
     mutex_unlock(&aw8697->rtp_lock);//vincent
     release_firmware(rtp_file);
-
-	if (aw8697->device_id == 815) {
-		pr_info("%s: rtp file [%s] size = %d, f0 = %d\n", __func__,
-		aw8697_rtp_name[aw8697->rtp_file_num], aw8697_rtp->len, aw8697->f0);
-	} else if (aw8697->device_id == 81538) {
-		pr_info("%s: rtp file [%s] size = %d, f0 = %d\n", __func__,
-		aw8697_rtp_name_150Hz[aw8697->rtp_file_num], aw8697_rtp->len, aw8697->f0);
-#ifdef CONFIG_OPLUS_HAPTIC_OOS
-	} else if (aw8697->device_id == 1815) {
-        pr_info("%s: rtp file [%s] size = %d, f0 = %d\n", __func__,
-            aw8697_rtp_name_1815_170Hz[aw8697->rtp_file_num], aw8697_rtp->len, aw8697->f0);
-#endif
-	} else if (aw8697->device_id == 619) {
-#ifdef CONFIG_OPLUS_HAPTIC_OOS
-		if (aw8697->f0 <= 1680) {
-			pr_info("%s: rtp file [%s] size = %d, f0 = %d\n", __func__,
-			aw8697_rtp_name_0619_166Hz[aw8697->rtp_file_num], aw8697_rtp->len, aw8697->f0);
-		} else if (aw8697->f0 <= 1720) {
-			pr_info("%s: rtp file [%s] size = %d, f0 = %d\n", __func__,
-			aw8697_rtp_name_0619_170Hz[aw8697->rtp_file_num], aw8697_rtp->len, aw8697->f0);
-		} else {
-			pr_info("%s: rtp file [%s] size = %d, f0 = %d\n", __func__,
-			aw8697_rtp_name_0619_174Hz[aw8697->rtp_file_num], aw8697_rtp->len, aw8697->f0);
-		}
-#else
-		pr_info("%s: rtp file [%s] size = %d, f0 = %d\n", __func__,
-		aw8697_rtp_name[aw8697->rtp_file_num], aw8697_rtp->len, aw8697->f0);
-#endif
-	} else if (aw8697->device_id == 1040) {
-                pr_info("%s: rtp file [%s] size = %d, f0 = %d\n", __func__,
-                aw8697_rtp_name[aw8697->rtp_file_num], aw8697_rtp->len, aw8697->f0);
-	} else if (aw8697->device_id == 9595) {
-		pr_info("%s: rtp file [%s] size = %d, f0 = %d\n", __func__,
-		aw8697_rtp_name_9595_170Hz[aw8697->rtp_file_num], aw8697_rtp->len, aw8697->f0);
-	} else {
-#ifdef CONFIG_OPLUS_HAPTIC_OOS
-		pr_info("%s: rtp file [%s] size = %d, f0 = %d\n", __func__,
-		aw8697_rtp_name_0832_234Hz[aw8697->rtp_file_num], aw8697_rtp->len, aw8697->f0);
-#else
-		pr_info("%s: rtp file [%s] size = %d, f0 = %d\n", __func__,
-		aw8697_rtp_name_0832_230Hz[aw8697->rtp_file_num], aw8697_rtp->len, aw8697->f0);
-#endif
-	}
-
 
     aw8697->rtp_init = 1;
     mutex_lock(&aw8697->lock);
@@ -8390,7 +8339,6 @@ static ssize_t aw8697_activate_store(struct device *dev,
 		aw8697_haptic_set_rtp_aei(aw8697, false);
 		aw8697_interrupt_clear(aw8697);
 		aw8697->sin_add_flag = 0;
-		pr_info("%s: value=%d\n", __FUNCTION__, val);
 	} else {
 		if (aw8697->duration <= 500) {
 			aw8697->sin_add_flag = 0;
